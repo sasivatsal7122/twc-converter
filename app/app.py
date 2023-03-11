@@ -50,6 +50,11 @@ def convert(val):
 
 
 def main():
+    st.set_page_config(
+    page_title="TWConverter",
+    page_icon="🐦",
+)
+    st.title("#")  
     hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
