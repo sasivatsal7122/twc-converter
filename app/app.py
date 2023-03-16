@@ -3,6 +3,7 @@ from snscrape.modules.twitter import TwitterUserScraper
 from snscrape.base import ScraperException
 import re
 import time 
+from PIL import Image
 
 def convert(val):
     # detemining whether val is username or ID
@@ -22,7 +23,7 @@ def convert(val):
                 profile_pic = master.profileImageUrl.replace("normal.jpg","200x200.jpg")
                 redirect_url = f"https://twitter.com/intent/user?screen_name={Screen_Name}"
     
-            except AttributeError or ScraperException:
+            except (AttributeError , ScraperException , ValueError) as e:
                 Screen_Name = f"USER ID - {val} DOES NOT EXIST, kindly enter correct userID"
                 profile_pic = False
                 redirect_url = False
@@ -35,7 +36,7 @@ def convert(val):
                 profile_pic = master.profileImageUrl.replace("normal.jpg","200x200.jpg")
                 redirect_url = f"https://twitter.com/intent/user?user_id={User_ID}"
                 
-            except AttributeError or ScraperException:
+            except (AttributeError , ScraperException , ValueError) as e:
                 User_ID = f"USERNAME - @{val} DOES NOT EXIST, kindly enter correct username"
                 profile_pic = False
                 redirect_url = False
@@ -62,12 +63,19 @@ def main():
             </style>
             """
     st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-    st.title("Twitter Username to ID converter and Vice versa")
+    col1,col2 = st.columns((1,4))
+    with col1:
+        image = Image.open('2.png')
+        st.image(image)
+    with col2:
+        st.markdown("<h1> Twitter Username to <span style = 'display: block;'> ID converter and Vice versa</span> </h1>",unsafe_allow_html=True)
+        st.caption("Developed by EdgeForex")
+    #st.title("Twitter Username to ID converter and Vice versa")
     
     st.header("Enter Twitter Username/ID")
-    val = st.text_input("Eg: @edgeforex1 or 1234567890",key="placeholder",)
+    val = st.text_input("Eg: @edgeforex1 or 1355508853706686467",key="placeholder",)
     submit = st.button("Find User")
-    if submit and val:
+    if submit or val:
         res,profilePic,redirectUrl,master = convert(val)
         with st.spinner('Searching...'):
             time.sleep(3)
@@ -84,11 +92,11 @@ def main():
                             unsafe_allow_html=True
                 )
             with col2:
-                dispName = "Display Name: "+master.displayname
+                dispName = master.displayname
                 followCount = "Follower's Count: "+str(master.followersCount)
                 followinCount = "Following Count: "+str(master.friendsCount)
                 tweetCount = "Tweets Count: "+str(master.statusesCount)
-                st.text(dispName)
+                st.markdown(f"<p ><TT>Display Name: </TT><TT style='color:#02eaf2'>{dispName}</TT></p>", unsafe_allow_html=True)
                 st.text(followCount)
                 st.text(followinCount)
                 st.text(tweetCount)
@@ -139,5 +147,6 @@ with <img src="https://em-content.zobj.net/source/skype/289/red-heart_2764-fe0f.
 </div>
 """
     st.write(ft, unsafe_allow_html=True)
+    
 if __name__=="__main__":
     main()
